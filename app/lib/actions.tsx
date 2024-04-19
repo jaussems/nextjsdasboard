@@ -14,9 +14,8 @@ const FormSchema = z.object({
     customerId: z.string({
       invalid_type_error: 'Please select a customer.'
     }),
-    amount: z.coerce.number({
-      invalid_type_error: 'Please enter an amount greater than $0.'
-    }),
+    amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
+
     status: z.enum(['pending', 'paid'], {
       invalid_type_error: 'Please select an invoice status.'
     }),
@@ -43,6 +42,7 @@ export async function createInvoice(prevtState: State, formData: FormData){
  
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
+    console.log(`Validate fields: ${validatedFields.error}`)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
